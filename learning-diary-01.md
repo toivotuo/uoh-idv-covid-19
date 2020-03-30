@@ -70,7 +70,7 @@ investigation):
   granularity for the US. The dataset is potentially interesting if
   the interactive visualisation is done both for a global view
   (between countries) and for the US (e.g. between US
-  states). Detailed contant analysis of the 'nytimes' dataset is not
+  states). Detailed content analysis of the 'nytimes' dataset is not
   yet done.
 
 Based on the above the most relevant datasets for this project are the
@@ -115,7 +115,7 @@ avenues for exploring correlations (if not causations).
 No significant problems in the project have been encountered so far.
 
 It would appear that number of relevant datasets are available, but it
-is a bit problematic that most are qualitatie, not really
+is a bit problematic that most are qualitative, not really
 quantitative. While it would be interesting to try and quantify some
 of the datasets, this would fall outside of the scope of this
 project. Or at the very least, the work would be taking the long way
