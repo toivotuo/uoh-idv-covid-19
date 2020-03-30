@@ -30,9 +30,10 @@ visualisation as a Jupyter Notebook.
 
 ### Other datasets investigated
 
-For other data sources, I have investigated and analysed the contents of the
-following datasets (links below are to more details on each dataset
-investigation):
+For other data sources, I have investigated and analysed the contents
+of the following datasets. Links below are to more details on each
+dataset investigation (access the links via the live GitHub copy of
+this document).
 
 * [jhu](jhu/): The Johns Hopkins University (JHU) dataset that reports
   COVID-19 cases on a per country basis daily. It would appear that
