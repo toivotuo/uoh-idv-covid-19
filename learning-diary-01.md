@@ -1,6 +1,6 @@
 # Learning Diary #01 (Interactive Data Visualisation)
 
-First learning diary topic is on "project overview, and data
+The first learning diary topic is on "project overview, and data
 processing (acquisition, cleaning, transformation, annotation, etc)".
 
 For this learning diary, I've selected the PPP format and will detail
