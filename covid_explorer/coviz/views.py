@@ -29,6 +29,8 @@ def map(request):
     import pandas as pd
     import folium
     import pycountry
+    import json
+    import requests
 
     # FIXME: Using rather the ECDC data would be better. Less
     # wrangling needed than with the JHU data.
@@ -76,6 +78,26 @@ def map(request):
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="Cases of COVID-19",
+    ).add_to(map)
+
+    # Third, let's set some markers on the map.
+
+    # FIXME: We should have each country's data as markers (or
+    # preferably making each country clickable).
+
+    folium.Marker(
+        location=[51.50, 0],
+        popup='<b>Greenwich</b>',
+        icon=folium.Icon(icon='cloud')
+    ).add_to(map)
+
+    url = 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data'
+    dataviz = json.loads(requests.get(f'{url}/vis2.json').text)
+
+    folium.Marker(
+        location=[60.17, 24.94],
+        popup=folium.Popup(max_width=450).add_child(
+            folium.Vega(dataviz, width=450, height=250))
     ).add_to(map)
 
     # FIXME: The map should be rendered in an iframe.
