@@ -1,6 +1,19 @@
 <html>
   <head>
     <title>COVIZ - The COVID-19 Visualizer</title>
+    <style>
+      th, td {
+	  padding: 10px;
+	  vertical-align: top;
+      }
+      div {
+	  font-family: Arial, Helvetica, sans-serif;
+      }
+      .helptext {
+	  margin-top: 10px;
+	  display: inline-block;
+      }
+    </style>
   </head>
   <body>
 
@@ -17,7 +30,15 @@
 
     </div>
 
-    <div style="float: left; width: 20%; margin: 10px;">
+    <div style="float: left; width: 25%; margin: 10px;">
+
+      <h1>COVIZ</h1>
+
+      <p>
+	Shown on the map are COVID-19 {{ form.relativity.value }}
+	{{ form.dataset.value }} on {{ form.date.value }}.
+	Use the controls below to explore the data.
+      </p>
 
       <table>
 	<form action="/coviz/" method="POST">
@@ -29,6 +50,15 @@
 	  </tr>
 	</form>
       </table>
+
+      <p>
+	Click on a maker for each European country capital to see development
+	of cases over the two preceding weeks.
+      </p>
+
+      <p>
+	Data source: ECDC
+      </p>
 
     </div>
 

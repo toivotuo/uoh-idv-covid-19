@@ -4,17 +4,29 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
 
+from .helpers import make_marker
 
 class ControlsForm(forms.Form):
-    date = forms.DateField(label='Date')
-    dataset = forms.ChoiceField(choices=(
-        ('cases', 'Cases'),
-        ('deaths', 'Deaths'),
-    ))
-    relativity = forms.ChoiceField(choices=(
-        ('absolute', 'Absolute'),
-        ('relative', 'Relative'),
-    ))
+    date = forms.DateField(
+        label="Date",
+        help_text="Show data for this date",
+    )
+    dataset = forms.ChoiceField(
+        label="Dataset",
+        choices=(
+            ('cases', 'Cases'),
+            ('deaths', 'Deaths'),
+        ),
+        help_text="Show diagnosed cases or fatalities",
+    )
+    relativity = forms.ChoiceField(
+        label="Relativity",
+        choices=(
+            ('absolute', 'Absolute'),
+            ('relative', 'Relative'),
+        ),
+        help_text="Show numbers as absolute or relative to million inhabitants",
+    )
 
 
 def index(request):
@@ -62,7 +74,8 @@ def map(request, date, dataset, relativity):
     # url = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv/"
     url = "/tmp/ecdc.csv"  # FIXME: Fails on deployment
 
-    data = pd.read_csv(url)
+    raw_data = pd.read_csv(url)
+    data = raw_data  # FIXME: hack
 
     data = data[data['dateRep'] == date.strftime("%d/%m/%Y")]
 
@@ -74,9 +87,8 @@ def map(request, date, dataset, relativity):
     if relativity == 'relative':
         data[dataset] = data[dataset] / (data['popData2018'] / 1000000)  # per million
         bins = data[dataset].quantile([0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95, 1.0])
-        bins = 6  # FIXME: not actually doing binning
     else:
-        bins = 6  # Use 6 equal length bins between min and max
+        pass
 
     # Render the data on a choropleth.
 
@@ -95,9 +107,43 @@ def map(request, date, dataset, relativity):
         fill_color='YlGnBu',
         fill_opacity=0.7,
         line_opacity=0.2,
-        # bins=bins,  # FIXME: not actually doing binning
-        legend_name="COVID-19 {} on {} (Data source: ECDC)".format(dataset, date.strftime('%Y-%m-%d')),
+        bins=9,
+        legend_name="COVID-19 {} {} on {} (Data source: ECDC)".format(relativity, dataset, date.strftime('%Y-%m-%d')),
     ).add_to(map)
+
+    # Add a marker for each country to the map.
+
+    # Source for capitals data: https://www.kaggle.com/nikitagrec/world-capitals-gps
+
+    caps = pd.read_csv("/tmp/capitals.csv")  # FIXME: deployment issue
+    caps = caps[caps['ContinentName'] == 'Europe']
+
+    def rebase_date(date):
+        date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        return date
+
+    raw_data.dateRep = raw_data.dateRep.apply(rebase_date)
+    raw_data.sort_values(by=['dateRep'], inplace=True)
+    before_date = datetime.datetime(date.year, date.month, date.day)
+    raw_data = raw_data[raw_data['dateRep'] <= before_date]
+
+    for index, row in caps[0:250].iterrows():
+        country = row['CountryCode']
+        lat = row['CapitalLatitude']
+        lon = row['CapitalLongitude']
+
+        df = raw_data[raw_data['geoId'] == country]
+        df = df.tail(14)
+
+        if relativity == 'relative':
+            df[dataset] = df[dataset] / (df['popData2018'] / 1000000)  # per million
+
+        marker = make_marker(
+            df, country, lat, lon, dataset,
+        )
+        marker.add_to(map)
+
+    # Return the HTTP response.
 
     resp = HttpResponse(map.get_root().render())
     resp['X-Frame-Options'] = 'SAMEORIGIN'  # Let the map render in an <iframe>
