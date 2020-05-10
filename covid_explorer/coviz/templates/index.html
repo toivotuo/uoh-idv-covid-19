@@ -6,13 +6,15 @@
 
     <iframe id="map"
 	    name="map"
-	    title="COVIZ MAP"
-	    width="640"
+	    width="1024"
 	    height="480"
-	    src="http://localhost:8000/coviz/map/{{ date }}/">
+	    src="/coviz/map/{{ date }}/cases/">
     </iframe>
 
-    <a href="http://localhost:8000/coviz/map/2020-05-10/" target="map">2020-05-10</a>
+    <iframe id="controls"
+	    name="controls"
+	    src="/coviz/controls/">
+    </iframe>
 
   </body>
 </html>

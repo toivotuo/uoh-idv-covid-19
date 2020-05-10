@@ -16,7 +16,21 @@ class ISODateConverter:
 
 register_converter(ISODateConverter, 'isodate')
 
+
+class DatasetConverter:
+    regex = '(cases|deaths)'
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+register_converter(DatasetConverter, 'dataset')
+
+
 urlpatterns = [
     path('', views.index, name='index'),
-    path("map/<isodate:date>/", views.map, name='map'),
+    path('controls/', views.controls, name='controls'),
+    path("map/<isodate:date>/<dataset:dataset>/", views.map, name='map'),
 ]

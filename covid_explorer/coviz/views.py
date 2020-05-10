@@ -9,9 +9,24 @@ def index(request):
     return render(request, "index.html", context)
 
 
-def map(request, date):
-    """ Render a choropleth of COVID-19 cases using the data from the ECDC. """
+def controls(request):
+    """
+    A little view to provide controls in an iframe for the choropleth
+    iframe. Hack to avoid using any JS in the app.
+    """
+    context = {
+        "date": "2020-05-01",
+    }
 
+    resp = render(request, "controls.html", context)
+    resp['X-Frame-Options'] = 'SAMEORIGIN'  # Let the controls render in an <iframe>
+    return resp
+
+
+def map(request, date, dataset):
+    """
+    Render a choropleth of COVID-19 cases using the data from the ECDC.
+    """
     import pandas as pd
     import datetime
     import folium
@@ -21,7 +36,8 @@ def map(request, date):
     # FIXME: We have a naive setup here that fetches the data form the
     # ECDC with every request. Caching the data would be much better.
 
-    url = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
+    # url = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv/"
+    url = "/tmp/ecdc.csv"  # FIXME: Fails on deployment
 
     data = pd.read_csv(url)
 
@@ -39,12 +55,12 @@ def map(request, date):
     folium.Choropleth(
         geo_data=country_geo,
         data=data,
-        columns=['countryterritoryCode', 'cases'],
+        columns=['countryterritoryCode', dataset],
         key_on='feature.id',
         fill_color='YlGnBu',
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name="Cases of COVID-19 on {} (Data source: ECDC)".format(date.strftime('%Y-%m-%d')),
+        legend_name="COVID-19 {} on {} (Data source: ECDC)".format(dataset, date.strftime('%Y-%m-%d')),
     ).add_to(map)
 
     resp = HttpResponse(map.get_root().render())
