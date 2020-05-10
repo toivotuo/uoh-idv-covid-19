@@ -43,6 +43,5 @@ register_converter(RelativityConverter, 'relativity')
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('controls/', views.controls, name='controls'),
     path("map/<isodate:date>/<dataset:dataset>/<relativity:relativity>/", views.map, name='map'),
 ]

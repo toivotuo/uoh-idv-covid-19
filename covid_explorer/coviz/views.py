@@ -1,26 +1,45 @@
+import datetime
+
 from django.shortcuts import render
 from django.http import HttpResponse
+from django import forms
+
+
+class ControlsForm(forms.Form):
+    date = forms.DateField(label='Date')
+    dataset = forms.ChoiceField(choices=(
+        ('cases', 'Cases'),
+        ('deaths', 'Deaths'),
+    ))
+    relativity = forms.ChoiceField(choices=(
+        ('absolute', 'Absolute'),
+        ('relative', 'Relative'),
+    ))
+
 
 def index(request):
+    """
+    Here be dragons (and COVID-19 maps).
+    """
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    defaults = {
+        "date": yesterday.strftime("%Y-%m-%d"),
+        "dataset": "cases",
+        "relativity": "absolute",
+    }
+
+    if request.method == "POST":
+        form = ControlsForm(request.POST)
+        if form.is_valid():
+            pass  # do nothing
+    else:
+        form = ControlsForm(initial=defaults)
+
     context = {
-        "date": "2020-05-01",
+        "form": form,
     }
 
     return render(request, "index.html", context)
-
-
-def controls(request):
-    """
-    A little view to provide controls in an iframe for the choropleth
-    iframe. Hack to avoid using any JS in the app.
-    """
-    context = {
-        "date": "2020-05-01",
-    }
-
-    resp = render(request, "controls.html", context)
-    resp['X-Frame-Options'] = 'SAMEORIGIN'  # Let the controls render in an <iframe>
-    return resp
 
 
 def map(request, date, dataset, relativity):

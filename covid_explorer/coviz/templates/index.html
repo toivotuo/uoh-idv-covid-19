@@ -4,17 +4,33 @@
   </head>
   <body>
 
-    <iframe id="map"
-	    name="map"
-	    width="1024"
-	    height="480"
-	    src="/coviz/map/{{ date }}/cases/absolute/">
-    </iframe>
+    <div style="float: left; width: 70%; margin: 10px;">
 
-    <iframe id="controls"
-	    name="controls"
-	    src="/coviz/controls/">
-    </iframe>
+      {# FIXME: This is really ugly way to pass the URL! #}
+
+      <iframe id="map"
+	      name="map"
+	      width="100%"
+	      height="80%"
+	      src="/coviz/map/{{ form.date.value }}/{{ form.dataset.value }}/{{ form.relativity.value}}/">
+      </iframe>
+
+    </div>
+
+    <div style="float: left; width: 20%; margin: 10px;">
+
+      <table>
+	<form action="/coviz/" method="POST">
+	  {% csrf_token %}
+	  {{ form.as_table }}
+	  <tr>
+	    <td></td>
+	    <td><input type="submit" value="Refresh map"></td>
+	  </tr>
+	</form>
+      </table>
+
+    </div>
 
   </body>
 </html>
