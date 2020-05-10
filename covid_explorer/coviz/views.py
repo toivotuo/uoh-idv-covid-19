@@ -122,6 +122,7 @@ def map(request, date, dataset, relativity):
         date = datetime.datetime.strptime(date, '%d/%m/%Y')
         return date
 
+    raw_data.drop(columns=['day','month','year','countriesAndTerritories', 'countryterritoryCode', 'continentExp'], inplace=True)
     raw_data.dateRep = raw_data.dateRep.apply(rebase_date)
     raw_data.sort_values(by=['dateRep'], inplace=True)
     before_date = datetime.datetime(date.year, date.month, date.day)
