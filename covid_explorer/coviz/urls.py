@@ -29,8 +29,20 @@ class DatasetConverter:
 register_converter(DatasetConverter, 'dataset')
 
 
+class RelativityConverter:
+    regex = '(absolute|relative)'
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+register_converter(RelativityConverter, 'relativity')
+
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('controls/', views.controls, name='controls'),
-    path("map/<isodate:date>/<dataset:dataset>/", views.map, name='map'),
+    path("map/<isodate:date>/<dataset:dataset>/<relativity:relativity>/", views.map, name='map'),
 ]

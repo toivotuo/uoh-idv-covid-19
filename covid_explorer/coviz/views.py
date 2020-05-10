@@ -23,9 +23,13 @@ def controls(request):
     return resp
 
 
-def map(request, date, dataset):
+def map(request, date, dataset, relativity):
     """
     Render a choropleth of COVID-19 cases using the data from the ECDC.
+
+    :data: Show data for specific date
+    :dataset: Show 'cases' or 'deaths'
+    :relativity: Show 'absolute' or 'relative' case numbers
     """
     import pandas as pd
     import datetime
@@ -42,6 +46,18 @@ def map(request, date, dataset):
     data = pd.read_csv(url)
 
     data = data[data['dateRep'] == date.strftime("%d/%m/%Y")]
+
+    # By default, we assume absolute numbers and do no number
+    # crunching. If relative (per 1m population) is requested, then we
+    # calculate the relative load and do binning to avoid off the
+    # charts numbers for small countries.
+
+    if relativity == 'relative':
+        data[dataset] = data[dataset] / (data['popData2018'] / 1000000)  # per million
+        bins = data[dataset].quantile([0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95, 1.0])
+        bins = 6  # FIXME: not actually doing binning
+    else:
+        bins = 6  # Use 6 equal length bins between min and max
 
     # Render the data on a choropleth.
 
@@ -60,6 +76,7 @@ def map(request, date, dataset):
         fill_color='YlGnBu',
         fill_opacity=0.7,
         line_opacity=0.2,
+        # bins=bins,  # FIXME: not actually doing binning
         legend_name="COVID-19 {} on {} (Data source: ECDC)".format(dataset, date.strftime('%Y-%m-%d')),
     ).add_to(map)
 
