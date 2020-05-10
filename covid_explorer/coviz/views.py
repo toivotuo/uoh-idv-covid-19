@@ -71,8 +71,8 @@ def map(request, date, dataset, relativity):
     # FIXME: We have a naive setup here that fetches the data form the
     # ECDC with every request. Caching the data would be much better.
 
-    # url = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv/"
-    url = "/tmp/ecdc.csv"  # FIXME: Fails on deployment
+    url = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv/"
+    # url = "/tmp/ecdc.csv"  # FIXME: Fails on deployment
 
     raw_data = pd.read_csv(url)
     data = raw_data  # FIXME: hack

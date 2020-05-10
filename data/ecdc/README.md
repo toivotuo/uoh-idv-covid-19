@@ -13,6 +13,6 @@ reported.
 Whether the data content also matches in terms of COVID-19 numbers is
 unknown.
 
-Downloading the data as CSV: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+Downloading the data as CSV: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv/
 
 Alternative sources for the data: https://data.europa.eu/euodp/en/data/dataset/covid-19-coronavirus-data
