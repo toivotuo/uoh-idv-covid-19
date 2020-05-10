@@ -9,6 +9,8 @@ def index(request):
     """ Dummy index page to have something actually loading. """
     import pandas as pd
 
+    # FIXME: Replace this with an actual index!
+
     datasource = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     df = pd.read_csv(datasource)
 
@@ -23,24 +25,66 @@ def index(request):
 
     return HttpResponse(data.to_html())
 
-
 def map(request):
-    """Render a choropleth (coloured map) of COVID-19 cases."""
+    """ Render a choropleth of COVID-19 cases using the data from the ECDC. """
+
+    import pandas as pd
+    import datetime
+    import folium
+
+    # Fetch and setup the data from ECDC.
+
+    # FIXME: We have a naive setup here that fetches the data form the
+    # ECDC with every request. Caching the data would be much better.
+
+    url = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
+    date = datetime.date(2020, 5, 1)
+
+    data = pd.read_csv(url)
+
+    data = data[data['dateRep'] == date.strftime("%d/%m/%Y")]
+
+    # Render the data on a choropleth.
+
+    country_geo = "/tmp/world-countries.json" # FIXME: Fails on deployment
+
+    map = folium.Map(
+        location=[45,0],
+        zoom_start=3.0,
+    )
+
+    folium.Choropleth(
+        geo_data=country_geo,
+        data=data,
+        columns=['countryterritoryCode', 'cases'],
+        key_on='feature.id',
+        fill_color='YlGnBu',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name="Cases of COVID-19 on {} (Data source: ECDC)".format(date.strftime('%Y-%m-%d')),
+    ).add_to(map)
+
+    # FIXME: The map should be rendered in an iframe.
+
+    return HttpResponse(map.get_root().render())
+
+
+def map_old(request):
+    """Render a choropleth (coloured map) of COVID-19 cases. Uses data from JHU."""
     import pandas as pd
     import folium
     import pycountry
     import json
     import requests
 
-    # FIXME: Using rather the ECDC data would be better. Less
-    # wrangling needed than with the JHU data.
+    # FIXME: Remove this method that was done with the hard to wrangle JHU data.
 
     # First, fetch and wrangle the relevant data.
 
     country_geo = '/tmp/world-countries.json'
 
-    # FIXME: Dumb to read the latest data directly from GitHub on
-    # every request.
+    # FIXME: Not an efficient approach to read the latest data
+    # directly from GitHub on every request.
 
     datasource = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     data = pd.read_csv(datasource)
