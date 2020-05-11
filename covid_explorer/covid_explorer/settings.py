@@ -23,9 +23,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '64l*w0s4ea80j6bvornh#&c@n8kxu#c*t_&a4h(&)&-xu=419k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    'hal.pp.fishpool.fi',
+    'www.kasvua.org',
+]
 
 
 # Application definition
